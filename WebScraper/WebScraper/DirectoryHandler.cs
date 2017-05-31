@@ -22,7 +22,7 @@ namespace WebScraper
 
         private string ExtractFoldername(string url)
         {
-            return url.Split(new[] { '/' }).Last();
+            return url.Split(new[] { '/' }).Where(x => !string.IsNullOrEmpty(x)).Last();
         }
     }
 }
