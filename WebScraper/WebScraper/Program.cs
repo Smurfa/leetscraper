@@ -10,6 +10,10 @@ namespace WebScraper
     {
         static void Main(string[] args)
         {
+            var url = args.Count() == 0 ? @"http://tretton37.com/" : args.First();
+            var _scraper = new Scraper();
+
+            _scraper.Run(url);
         }
     }
 }
