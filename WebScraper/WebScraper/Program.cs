@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace WebScraper
 {
@@ -12,8 +11,7 @@ namespace WebScraper
         {
             var url = args.Count() == 0 ? @"http://tretton37.com/" : args.First();
             var _scraper = new Scraper();
-
-            _scraper.Run(url);
+            _scraper.Run(url).Wait();
         }
     }
 }
