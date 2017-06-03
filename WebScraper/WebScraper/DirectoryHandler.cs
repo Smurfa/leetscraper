@@ -8,21 +8,54 @@ using System.Threading.Tasks;
 
 namespace WebScraper
 {
-    public class DirectoryHandler
+    public static class DirectoryHandler
     {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="url"></param>
-        public void CreateDirectory(string url)
+        /// <param name="filepath"></param>
+        public static async Task<DirectoryInfo> CreateDirectoryFromFilepath(string filepath)
         {
-            var folderName = ExtractFoldername(url);
-            Directory.CreateDirectory(folderName);
+            var splitPath = filepath.Split('/');
+            return Directory.CreateDirectory(Path.Combine(splitPath.Take(splitPath.Length - 1).ToArray()));
         }
 
-        private string ExtractFoldername(string url)
+        
+        public static async Task<bool> SaveFile(Stream stream, string filepath, int retry)
         {
-            return url.Split(new[] { '/' }).Where(x => !string.IsNullOrEmpty(x)).Last();
+            try
+            {
+                if (retry < 0)
+                    return false;
+                
+                using (var fileStream = File.Open(filepath, FileMode.Create))
+                {
+                    await stream.CopyToAsync(fileStream);
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                if ((await CreateDirectoryFromFilepath(filepath)).Exists)
+                    await SaveFile(stream, filepath, --retry);
+            }
+            return true;
         }
+        
+        //public static async Task<bool> SaveFile(string path)
+        //{
+        //    var temp = await CreateDirectoryFromFilepath(path);
+        //    return temp.Exists;
+        //}
+
+        //public static async Task<bool> Exists(string name)
+        //{
+        //    //var folderName = ExtractFoldername(url);
+        //    return Directory.Exists(name);
+        //}
+
+        //public async Task<string> ExtractRootFoldername(string name)
+        //{
+        //   return url.Split(new[] { '/' }).Where(x => !string.IsNullOrEmpty(x)).Last();
+        //}
     }
 }

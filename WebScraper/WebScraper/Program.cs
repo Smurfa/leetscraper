@@ -11,7 +11,9 @@ namespace WebScraper
         {
             var url = args.Count() == 0 ? @"http://tretton37.com/" : args.First();
             var _scraper = new Scraper();
-            _scraper.Run(url).Wait();
+
+            _scraper.BaseUrl = url;
+            _scraper.Run("index").Wait();
         }
     }
 }
