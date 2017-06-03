@@ -9,17 +9,17 @@ namespace WebScraper
 {
     public class HtmlParser
     {
-        public IEnumerable<string> ExtractAHrefTags(string html)
+        public IEnumerable<string> ExtractAllAttributesFromTag(string tag, string attribute, string html)
         {
             var document = new HtmlDocument();
             document.LoadHtml(html);
 
-            var nodes = document.DocumentNode.SelectNodes("//a[@href]");
+            var nodes = document.DocumentNode.SelectNodes("//" + tag + "[@" + attribute +  "]");
             if (nodes != null)
             {
                 foreach (var node in nodes)
                 {
-                    yield return node.GetAttributeValue("href", null);
+                    yield return node.GetAttributeValue(attribute, null);
                 }
             }
         }
