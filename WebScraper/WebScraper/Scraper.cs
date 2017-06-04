@@ -29,6 +29,14 @@ namespace WebScraper
             return false;
         }
 
+        public async Task DownloadContentFromCssAsync(string path)
+        {
+            foreach (var filepath in DirectoryHandler.GetCssFilepaths(path))
+            {
+                var css = await DirectoryHandler.ReadFileToString(filepath);
+            }
+        }
+
         /// <summary>
         /// Asynchronously downloads a webpage with its content, recursively calling its subpages and downloads them.
         /// </summary>

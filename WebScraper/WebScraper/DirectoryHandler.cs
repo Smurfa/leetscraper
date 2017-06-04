@@ -34,6 +34,30 @@ namespace WebScraper
         }
 
         /// <summary>
+        /// Gets the set of filepath for all CSS-files in a specified directory.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetCssFilepaths(string path)
+        {
+            return Directory.GetFiles(path).Where(x => x.EndsWith(".css"));
+        }
+
+        /// <summary>
+        /// Asynchronously reads the content of a file to a string.
+        /// </summary>
+        /// <param name="filepath">The path of the file to load.</param>
+        /// <returns></returns>
+        public static async Task<string> ReadFileToString(string filepath)
+        {
+            using (var fileStream = File.Open(filepath, FileMode.Open, FileAccess.Read))
+            using (var reader = new StreamReader(fileStream))
+            {
+                return await reader.ReadToEndAsync();
+            }
+        }
+
+        /// <summary>
         /// Asynchronously tries to save a stream into a file.
         /// </summary>
         /// <param name="stream">The stream to read to the file.</param>
