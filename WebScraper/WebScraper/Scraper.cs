@@ -13,17 +13,16 @@ namespace WebScraper
         private HtmlParser _parser = new HtmlParser();
 
         public string BaseUrl { get; set; }
-        private const string _rootDirectory = "tretton37.com";
 
         public async Task<bool> Run(string page)
         {
             var result = await GetPage(BaseUrl + page);
 
             //Filter out the href tags for the subpages. Assuming that tags with anchor (#) will be covered from other hrefs and removing redirects to other sites.
-            var aHrefs = _parser.ExtractAllAttributesFromTag("a", "href", result).Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
-            var linkHrefs = _parser.ExtractAllAttributesFromTag("link", "href", result);
-            var scriptSrcs = _parser.ExtractAllAttributesFromTag("script", "src", result);
-            var imgSrcs = _parser.ExtractAllAttributesFromTag("img", "src", result);
+            var aHrefs = _parser.ExtractAllTagAttribute(result, "a", "href").Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
+            var linkHrefs = _parser.ExtractAllTagAttribute(result, "link", "href");
+            var scriptSrcs = _parser.ExtractAllTagAttribute(result, "script", "src");
+            var imgSrcs = _parser.ExtractAllTagAttribute(result, "img", "src");
 
             foreach (var link in imgSrcs.Union(scriptSrcs.Union(linkHrefs)))
             {
@@ -44,10 +43,10 @@ namespace WebScraper
                 return;
 
             var result = await GetPage(BaseUrl + pageToGet);
-            var aHrefs = _parser.ExtractAllAttributesFromTag("a", "href", result).Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
-            var linkHrefs = _parser.ExtractAllAttributesFromTag("link", "href", result);
-            var scriptSrcs = _parser.ExtractAllAttributesFromTag("script", "src", result);
-            var imgSrcs = _parser.ExtractAllAttributesFromTag("img", "src", result);
+            var aHrefs = _parser.ExtractAllTagAttribute(result, "a", "href").Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
+            var linkHrefs = _parser.ExtractAllTagAttribute(result, "link", "href");
+            var scriptSrcs = _parser.ExtractAllTagAttribute(result, "script", "src");
+            var imgSrcs = _parser.ExtractAllTagAttribute(result, "img", "src");
 
             foreach (var link in imgSrcs.Union(scriptSrcs.Union(linkHrefs)))
             {
