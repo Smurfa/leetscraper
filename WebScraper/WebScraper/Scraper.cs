@@ -8,41 +8,40 @@ using System.Threading.Tasks;
 
 namespace WebScraper
 {
+    /// <summary>
+    /// Web page scraper that downloads its content and saves it locally.
+    /// </summary>
     public class Scraper
     {
         private HtmlParser _parser = new HtmlParser();
+        private string _baseUrl;
 
-        public string BaseUrl { get; set; }
-
-        public async Task<bool> Run(string page)
+        /// <summary>
+        /// Begins the download of a website.
+        /// </summary>
+        /// <param name="url">The URL to the website.</param>
+        /// <param name="page">The page to start the download from.</param>
+        /// <returns></returns>
+        public async Task<bool> Run(string url, string page)
         {
-            var result = await GetPageAsync(BaseUrl + page);
-
-            //Filter out the href tags for the subpages. Assuming that tags with anchor (#) will be covered from other hrefs and removing redirects to other sites.
-            var aHrefs = _parser.ExtractAllTagAttribute(result, "a", "href").Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
-            var linkHrefs = _parser.ExtractAllTagAttribute(result, "link", "href");
-            var scriptSrcs = _parser.ExtractAllTagAttribute(result, "script", "src");
-            var imgSrcs = _parser.ExtractAllTagAttribute(result, "img", "src");
-
-            foreach (var link in imgSrcs.Union(scriptSrcs.Union(linkHrefs)))
-            {
-                var dowloadUrl = link.Contains('?') ? link.Substring(0, link.IndexOf('?')) : link;
-                await DownloadFileAsync(BaseUrl + dowloadUrl);
-            }
-            await DownloadFileAsync(BaseUrl + page + ".html");
-
-            await FetchSubpages(aHrefs, new List<string>());
-
+            _baseUrl = url;
+            await DownLoadPageAsync(new List<string> { page }, new List<string>());
             return false;
         }
 
-        public async Task FetchSubpages(IEnumerable<string> pagesToFetch, IEnumerable<string> fetchedPages)
+        /// <summary>
+        /// Asynchronously downloads a webpage with its content, recursively calling its subpages and downloads them.
+        /// </summary>
+        /// <param name="pagesToFetch"></param>
+        /// <param name="fetchedPages"></param>
+        /// <returns></returns>
+        public async Task DownLoadPageAsync(IEnumerable<string> pagesToFetch, IEnumerable<string> fetchedPages)
         {
             var pageToGet = pagesToFetch?.FirstOrDefault();
             if (pageToGet == null)
                 return;
 
-            var result = await GetPageAsync(BaseUrl + pageToGet);
+            var result = await GetPageAsync(_baseUrl + pageToGet);
             var aHrefs = _parser.ExtractAllTagAttribute(result, "a", "href").Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
             var linkHrefs = _parser.ExtractAllTagAttribute(result, "link", "href");
             var scriptSrcs = _parser.ExtractAllTagAttribute(result, "script", "src");
@@ -65,12 +64,12 @@ namespace WebScraper
                     await DownloadFileAsync(downloadUrl);
                 }
             }
-            await DownloadFileAsync(VerifyDownloadUrl(BaseUrl + pageToGet) + ".html");
+            await DownloadFileAsync(VerifyDownloadUrl(_baseUrl + pageToGet) + ".html");
             
             fetchedPages = Enumerable.Union(fetchedPages, new List<string> { pageToGet });
             pagesToFetch = Enumerable.Except(pagesToFetch.Union(aHrefs), fetchedPages);
 
-            await FetchSubpages(pagesToFetch, fetchedPages);
+            await DownLoadPageAsync(pagesToFetch, fetchedPages);
         }
 
         /// <summary>
@@ -119,7 +118,7 @@ namespace WebScraper
             url = url.Contains("../") ? url.Replace("../", string.Empty) : url;
 
             //Make sure the URL either starts of with http or https
-            url = url.StartsWith("http://") || url.StartsWith("https://") ? url : BaseUrl + url;
+            url = url.StartsWith("http://") || url.StartsWith("https://") ? url : _baseUrl + url;
             
             return url;
         }
