@@ -13,7 +13,8 @@ namespace WebScraper
     /// </summary>
     public class Scraper
     {
-        private HtmlParser _parser = new HtmlParser();
+        private HtmlParser _htmlParser = new HtmlParser();
+        private CssParser _cssParser = new CssParser();
         private string _baseUrl;
 
         /// <summary>
@@ -25,7 +26,9 @@ namespace WebScraper
         public async Task<bool> Run(string url, string page)
         {
             _baseUrl = url;
-            await DownLoadPageAsync(new List<string> { page }, new List<string>());
+            //await DownLoadPageAsync(new List<string> { page }, new List<string>());
+            await DownloadContentFromCssAsync(@"tretton37.com\assets\css\");
+
             return false;
         }
 
@@ -34,6 +37,10 @@ namespace WebScraper
             foreach (var filepath in DirectoryHandler.GetCssFilepaths(path))
             {
                 var css = await DirectoryHandler.ReadFileToString(filepath);
+                foreach (var url in _cssParser.GetContentUrls(css))
+                {
+                    await DownloadFileAsync(VerifyDownloadUrl(url));
+                }
             }
         }
 
@@ -50,10 +57,10 @@ namespace WebScraper
                 return;
 
             var result = await GetPageAsync(_baseUrl + pageToGet);
-            var aHrefs = _parser.ExtractAllTagAttribute(result, "a", "href").Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
-            var linkHrefs = _parser.ExtractAllTagAttribute(result, "link", "href");
-            var scriptSrcs = _parser.ExtractAllTagAttribute(result, "script", "src");
-            var imgSrcs = _parser.ExtractAllTagAttribute(result, "img", "src");
+            var aHrefs = _htmlParser.ExtractAllTagAttribute(result, "a", "href").Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
+            var linkHrefs = _htmlParser.ExtractAllTagAttribute(result, "link", "href");
+            var scriptSrcs = _htmlParser.ExtractAllTagAttribute(result, "script", "src");
+            var imgSrcs = _htmlParser.ExtractAllTagAttribute(result, "img", "src");
 
             foreach (var link in imgSrcs.Union(scriptSrcs.Union(linkHrefs)))
             {
