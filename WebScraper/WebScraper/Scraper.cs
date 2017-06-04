@@ -17,11 +17,6 @@ namespace WebScraper
 
         public async Task<bool> Run(string page)
         {
-            //page = page.StartsWith("/") ? page.Substring(1) : page;
-            //var path = Path.Combine("tretton37.com", page + ".html");
-            //if (File.Exists(Path.Combine("tretton37.com", page, ".html")))
-            //    return false;
-
             var result = await GetPage(BaseUrl + page);
 
             //Filter out the href tags for the subpages. Assuming that tags with anchor (#) will be covered from other hrefs and removing redirects to other sites.
@@ -49,7 +44,7 @@ namespace WebScraper
                 return;
 
             var result = await GetPage(BaseUrl + pageToGet);
-
+            var aHrefs = _parser.ExtractAllAttributesFromTag("a", "href", result).Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
             var linkHrefs = _parser.ExtractAllAttributesFromTag("link", "href", result);
             var scriptSrcs = _parser.ExtractAllAttributesFromTag("script", "src", result);
             var imgSrcs = _parser.ExtractAllAttributesFromTag("img", "src", result);
@@ -72,9 +67,9 @@ namespace WebScraper
                 }
             }
             await DownloadFile(await CreateDownloadUrl(BaseUrl + pageToGet) + ".html");
-
+            
             fetchedPages = Enumerable.Union(fetchedPages, new List<string> { pageToGet });
-            pagesToFetch = pagesToFetch.Where(x => x != pageToGet).Except(fetchedPages);
+            pagesToFetch = Enumerable.Except(pagesToFetch.Union(aHrefs), fetchedPages);
 
             await FetchSubpages(pagesToFetch, fetchedPages);
         }
@@ -102,14 +97,23 @@ namespace WebScraper
 
         public static async Task<string> ExtractPathFromUrl(string url)
         {
-            url = url.StartsWith(@"http://") ? url.Substring(@"http://".Length) : url.Substring(@"https://".Length);
+            url = url.StartsWith("http://") ? url.Substring("http://".Length) : url.Substring("https://".Length);
             return url;
         }
 
         public async Task<string> CreateDownloadUrl(string url)
         {
+            //Clear input from URL
             url = url.Contains('?') ? url.Substring(0, url.IndexOf('?')) : url;
-            url = url.StartsWith(@"http://") || url.StartsWith(@"https://") ? url : BaseUrl + url;
+            
+            //Not interested in relativistic paths
+            if (url.Contains("/../") || url.Contains("../"))
+            {
+                url = url.Replace("/../", "").Replace("../", "");
+            }
+
+            url = url.StartsWith("http://") || url.StartsWith("https://") ? url : BaseUrl + url;
+            
             return url;
         }
 
