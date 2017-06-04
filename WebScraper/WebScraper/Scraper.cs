@@ -26,12 +26,17 @@ namespace WebScraper
         public async Task<bool> Run(string url, string page)
         {
             _baseUrl = url;
-            //await DownLoadPageAsync(new List<string> { page }, new List<string>());
+            await DownLoadPageAsync(new List<string> { page }, new List<string>());
             await DownloadContentFromCssAsync(@"tretton37.com\assets\css\");
 
             return false;
         }
 
+        /// <summary>
+        /// Asynchronously downloads the content from all CSS files in a directory.
+        /// </summary>
+        /// <param name="path">The path of the CSS directory.</param>
+        /// <returns></returns>
         public async Task DownloadContentFromCssAsync(string path)
         {
             foreach (var filepath in DirectoryHandler.GetCssFilepaths(path))
@@ -58,12 +63,11 @@ namespace WebScraper
 
             var result = await GetPageAsync(_baseUrl + pageToGet);
             var aHrefs = _htmlParser.ExtractAllTagAttribute(result, "a", "href").Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
-            var linkHrefs = _htmlParser.ExtractAllTagAttribute(result, "link", "href");
-            var scriptSrcs = _htmlParser.ExtractAllTagAttribute(result, "script", "src");
-            var imgSrcs = _htmlParser.ExtractAllTagAttribute(result, "img", "src");
+            var contentUrls = GetContentUrls(result);
 
-            foreach (var link in imgSrcs.Union(scriptSrcs.Union(linkHrefs)))
+            foreach (var link in contentUrls)
             {
+                //At least one link seemed to consist of multple links (e.g. a href="http://qwe...com,http://rty...com") thus the check and split
                 if (link.Contains(','))
                 {
                     var actualLinks = link.Split(',');
@@ -136,6 +140,28 @@ namespace WebScraper
             url = url.StartsWith("http://") || url.StartsWith("https://") ? url : _baseUrl + url;
             
             return url;
+        }
+
+        /// <summary>
+        /// Gets the set or URLs to download content from for a specified HTML source.
+        /// </summary>
+        /// <param name="html">The HTML source to scan for tags and attributes.</param>
+        /// <returns></returns>
+        public IEnumerable<string> GetContentUrls(string html)
+        {
+            var attributesToExtract = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("link", "href"),
+                new Tuple<string, string>("script", "src"),
+                new Tuple<string, string>("img", "src")
+            };
+
+            var result = new List<string>();
+            foreach (var attribute in attributesToExtract)
+            {
+                result.AddRange(_htmlParser.ExtractAllTagAttribute(html, attribute.Item1, attribute.Item2));
+            }            
+            return result;
         }
     }
 }

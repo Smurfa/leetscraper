@@ -12,9 +12,9 @@ namespace WebScraper
     public class HtmlParser
     {
         /// <summary>
-        /// Gets all the value from a specified attribute that belongs to an HTML-tag.
+        /// Gets the set of values from a specified attribute that belongs to an HTML-tag.
         /// </summary>
-        /// <param name="html">The HTML code to parse.</param>
+        /// <param name="html">The HTML source to parse.</param>
         /// <param name="tag">The tag to extract from.</param>
         /// <param name="attribute">The attribute to get the value for.</param>
         /// <returns></returns>
