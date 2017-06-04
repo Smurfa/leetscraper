@@ -26,7 +26,7 @@ namespace WebScraper
         public async Task<bool> Run(string url, string page)
         {
             _baseUrl = url;
-            await DownLoadPageAsync(new List<string> { page }, new List<string>());
+            await DownLoadPageAsync(new List<string> { page, "404" }, new List<string>());
             await DownloadContentFromCssAsync(@"tretton37.com\assets\css\");
 
             return false;
@@ -62,7 +62,8 @@ namespace WebScraper
                 return;
 
             var result = await GetPageAsync(_baseUrl + pageToGet);
-            var aHrefs = _htmlParser.ExtractAllTagAttribute(result, "a", "href").Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
+            var aHrefs = _htmlParser.ExtractAllTagAttribute(result, "a", "href")
+                .Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
             var contentUrls = GetContentUrls(result);
 
             foreach (var link in contentUrls)
@@ -83,7 +84,9 @@ namespace WebScraper
                     await DownloadFileAsync(downloadUrl);
                 }
             }
-            await DownloadFileAsync(VerifyDownloadUrl(_baseUrl + pageToGet) + ".html");
+            var pageUrl = VerifyDownloadUrl(_baseUrl + pageToGet);
+            pageUrl = pageUrl.EndsWith(".htm") || pageUrl.EndsWith(".html") ? pageUrl : pageUrl + ".html";
+            await DownloadFileAsync(pageUrl);
             
             fetchedPages = Enumerable.Union(fetchedPages, new List<string> { pageToGet });
             pagesToFetch = Enumerable.Except(pagesToFetch.Union(aHrefs), fetchedPages);
