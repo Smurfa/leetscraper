@@ -21,6 +21,17 @@ namespace WebScraper
             var splitPath = filepath.Split('/');
             return Directory.CreateDirectory(Path.Combine(splitPath.Take(splitPath.Length - 1).ToArray()));
         }
+        
+        /// <summary>
+        /// Gets a local path of a file based on it URL adress. The path is relative to the application path.
+        /// </summary>
+        /// <param name="url">The URL adress of the file.</param>
+        /// <returns></returns>
+        public static string ExtractPathFromUrl(string url)
+        {
+            url = url.StartsWith("http://") ? url.Substring("http://".Length) : url.Substring("https://".Length);
+            return url;
+        }
 
         /// <summary>
         /// Asynchronously tries to save a stream into a file.

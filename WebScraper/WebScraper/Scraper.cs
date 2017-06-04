@@ -81,7 +81,7 @@ namespace WebScraper
 
         public async Task DownloadFile(string url)
         {
-            var filepath = await ExtractPathFromUrl(url);
+            var filepath = DirectoryHandler.ExtractPathFromUrl(url);
             if (File.Exists(filepath))
                 return;
 
@@ -90,14 +90,8 @@ namespace WebScraper
             using (var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
             using (var content = await response.Content.ReadAsStreamAsync())
             {
-                await DirectoryHandler.SaveFileAsync(content, await ExtractPathFromUrl(url));   
+                await DirectoryHandler.SaveFileAsync(content, DirectoryHandler.ExtractPathFromUrl(url));   
             }
-        }
-
-        public static async Task<string> ExtractPathFromUrl(string url)
-        {
-            url = url.StartsWith("http://") ? url.Substring("http://".Length) : url.Substring("https://".Length);
-            return url;
         }
 
         /// <summary>
