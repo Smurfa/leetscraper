@@ -27,9 +27,9 @@ namespace WebScraper
             foreach (var link in imgSrcs.Union(scriptSrcs.Union(linkHrefs)))
             {
                 var dowloadUrl = link.Contains('?') ? link.Substring(0, link.IndexOf('?')) : link;
-                await DownloadFile(BaseUrl + dowloadUrl);
+                await DownloadFileAsync(BaseUrl + dowloadUrl);
             }
-            await DownloadFile(BaseUrl + page + ".html");
+            await DownloadFileAsync(BaseUrl + page + ".html");
 
             await FetchSubpages(aHrefs, new List<string>());
 
@@ -56,16 +56,16 @@ namespace WebScraper
                     foreach (var actualLink in actualLinks)
                     {
                         var downloadUrl = VerifyDownloadUrl(actualLink);
-                        await DownloadFile(downloadUrl);
+                        await DownloadFileAsync(downloadUrl);
                     }
                 }
                 else
                 {
                     var downloadUrl = VerifyDownloadUrl(link);
-                    await DownloadFile(downloadUrl);
+                    await DownloadFileAsync(downloadUrl);
                 }
             }
-            await DownloadFile(VerifyDownloadUrl(BaseUrl + pageToGet) + ".html");
+            await DownloadFileAsync(VerifyDownloadUrl(BaseUrl + pageToGet) + ".html");
             
             fetchedPages = Enumerable.Union(fetchedPages, new List<string> { pageToGet });
             pagesToFetch = Enumerable.Except(pagesToFetch.Union(aHrefs), fetchedPages);
@@ -79,7 +79,12 @@ namespace WebScraper
                 return await client.GetStringAsync(url);
         }
 
-        public async Task DownloadFile(string url)
+        /// <summary>
+        /// Asynchronously tries to download a file and save locally. If file already exists in designated target, no download will be initiated.
+        /// </summary>
+        /// <param name="url">The URL of the file to download.</param>
+        /// <returns></returns>
+        public async Task DownloadFileAsync(string url)
         {
             var filepath = DirectoryHandler.ExtractPathFromUrl(url);
             if (File.Exists(filepath))

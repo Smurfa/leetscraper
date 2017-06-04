@@ -39,9 +39,8 @@ namespace WebScraper
         /// <param name="stream">The stream to read to the file.</param>
         /// <param name="filepath">The path to save the file to.</param>
         /// <returns></returns>
-        public static async Task<bool> SaveFileAsync(Stream stream, string filepath)
+        public static async Task SaveFileAsync(Stream stream, string filepath)
         {
-            var success = false;
             try
             {
                 new FileInfo(filepath).Directory.Create();
@@ -49,13 +48,11 @@ namespace WebScraper
                 {
                     await stream.CopyToAsync(fileStream);
                 }
-                success = true;
             }
             catch (NotSupportedException)
             {
                 Console.WriteLine("Unsupported filepath... " + filepath);
             }
-            return success;
         }
     }
 }
