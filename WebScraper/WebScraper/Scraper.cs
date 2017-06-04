@@ -55,17 +55,17 @@ namespace WebScraper
                     var actualLinks = link.Split(',');
                     foreach (var actualLink in actualLinks)
                     {
-                        var downloadUrl = await CreateDownloadUrl(actualLink);
+                        var downloadUrl = VerifyDownloadUrl(actualLink);
                         await DownloadFile(downloadUrl);
                     }
                 }
                 else
                 {
-                    var downloadUrl = await CreateDownloadUrl(link);
+                    var downloadUrl = VerifyDownloadUrl(link);
                     await DownloadFile(downloadUrl);
                 }
             }
-            await DownloadFile(await CreateDownloadUrl(BaseUrl + pageToGet) + ".html");
+            await DownloadFile(VerifyDownloadUrl(BaseUrl + pageToGet) + ".html");
             
             fetchedPages = Enumerable.Union(fetchedPages, new List<string> { pageToGet });
             pagesToFetch = Enumerable.Except(pagesToFetch.Union(aHrefs), fetchedPages);
@@ -100,26 +100,24 @@ namespace WebScraper
             return url;
         }
 
-        public async Task<string> CreateDownloadUrl(string url)
+        /// <summary>
+        /// Take a URL which will be used for downloading a file and verifies that it is in a proper format.
+        /// Removes any input and relative paths and make sure it stats with an http or https request.
+        /// </summary>
+        /// <param name="url">The URL to be verified.</param>
+        /// <returns></returns>
+        public string VerifyDownloadUrl(string url)
         {
             //Clear input from URL
             url = url.Contains('?') ? url.Substring(0, url.IndexOf('?')) : url;
             
-            //Not interested in relativistic paths
-            if (url.Contains("/../") || url.Contains("../"))
-            {
-                url = url.Replace("/../", "").Replace("../", "");
-            }
+            //Not interested in relative paths
+            url = url.Contains("../") ? url.Replace("../", string.Empty) : url;
 
+            //Make sure the URL either starts of with http or https
             url = url.StartsWith("http://") || url.StartsWith("https://") ? url : BaseUrl + url;
             
             return url;
         }
-
-        //public static async Task<Stream> DonwloadHtml(string url)
-        //{
-        //    using (var client = new HttpClient())
-        //        return await client.GetStreamAsync(url);
-        //}
     }
 }
