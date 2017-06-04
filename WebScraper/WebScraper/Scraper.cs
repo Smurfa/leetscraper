@@ -16,7 +16,7 @@ namespace WebScraper
 
         public async Task<bool> Run(string page)
         {
-            var result = await GetPage(BaseUrl + page);
+            var result = await GetPageAsync(BaseUrl + page);
 
             //Filter out the href tags for the subpages. Assuming that tags with anchor (#) will be covered from other hrefs and removing redirects to other sites.
             var aHrefs = _parser.ExtractAllTagAttribute(result, "a", "href").Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
@@ -42,7 +42,7 @@ namespace WebScraper
             if (pageToGet == null)
                 return;
 
-            var result = await GetPage(BaseUrl + pageToGet);
+            var result = await GetPageAsync(BaseUrl + pageToGet);
             var aHrefs = _parser.ExtractAllTagAttribute(result, "a", "href").Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
             var linkHrefs = _parser.ExtractAllTagAttribute(result, "link", "href");
             var scriptSrcs = _parser.ExtractAllTagAttribute(result, "script", "src");
@@ -73,7 +73,12 @@ namespace WebScraper
             await FetchSubpages(pagesToFetch, fetchedPages);
         }
 
-        public async Task<string> GetPage(string url)
+        /// <summary>
+        /// Asynchronously gets the GET request of an URL as a string.
+        /// </summary>
+        /// <param name="url">The URL to get the content of.</param>
+        /// <returns></returns>
+        public async Task<string> GetPageAsync(string url)
         {
             using (var client = new HttpClient())
                 return await client.GetStringAsync(url);
