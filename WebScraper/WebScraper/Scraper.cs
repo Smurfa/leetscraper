@@ -90,7 +90,7 @@ namespace WebScraper
             using (var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
             using (var content = await response.Content.ReadAsStreamAsync())
             {
-                await DirectoryHandler.SaveFile(content, await ExtractPathFromUrl(url), 1);   
+                await DirectoryHandler.SaveFileAsync(content, await ExtractPathFromUrl(url));   
             }
         }
 

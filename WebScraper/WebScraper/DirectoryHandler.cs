@@ -5,57 +5,46 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace WebScraper
 {
+    /// <summary>
+    /// Contains methods for handling directories and files.
+    /// </summary>
     public static class DirectoryHandler
     {
         /// <summary>
-        /// 
+        /// Creates all directories and subdirectories based on a specified filepath. No directories are created if they already exists.
         /// </summary>
-        /// <param name="filepath"></param>
-        public static async Task<DirectoryInfo> CreateDirectoryFromFilepath(string filepath)
+        /// <param name="filepath">The path to create directories for.</param>
+        public static DirectoryInfo CreateDirectoryFromFilepath(string filepath)
         {
             var splitPath = filepath.Split('/');
             return Directory.CreateDirectory(Path.Combine(splitPath.Take(splitPath.Length - 1).ToArray()));
         }
 
-        
-        public static async Task<bool> SaveFile(Stream stream, string filepath, int retry)
+        /// <summary>
+        /// Asynchronously tries to save a stream into a file.
+        /// </summary>
+        /// <param name="stream">The stream to read to the file.</param>
+        /// <param name="filepath">The path to save the file to.</param>
+        /// <returns></returns>
+        public static async Task<bool> SaveFileAsync(Stream stream, string filepath)
         {
+            var success = false;
             try
             {
-                if (retry < 0)
-                    return false;
-                
-                using (var fileStream = File.Open(filepath, FileMode.Create))
+                new FileInfo(filepath).Directory.Create();
+                using (var fileStream = File.Create(filepath, 4096, FileOptions.Asynchronous))
                 {
                     await stream.CopyToAsync(fileStream);
                 }
+                success = true;
             }
-            catch (DirectoryNotFoundException)
+            catch (NotSupportedException)
             {
-                if ((await CreateDirectoryFromFilepath(filepath)).Exists)
-                    await SaveFile(stream, filepath, --retry);
+                Console.WriteLine("Unsupported filepath... " + filepath);
             }
-            return true;
+            return success;
         }
-        
-        //public static async Task<bool> SaveFile(string path)
-        //{
-        //    var temp = await CreateDirectoryFromFilepath(path);
-        //    return temp.Exists;
-        //}
-
-        //public static async Task<bool> Exists(string name)
-        //{
-        //    //var folderName = ExtractFoldername(url);
-        //    return Directory.Exists(name);
-        //}
-
-        //public async Task<string> ExtractRootFoldername(string name)
-        //{
-        //   return url.Split(new[] { '/' }).Where(x => !string.IsNullOrEmpty(x)).Last();
-        //}
     }
 }
