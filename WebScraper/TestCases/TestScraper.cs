@@ -26,7 +26,7 @@ namespace TestCases
         }
 
         /// <summary>
-        /// Tries to download a file and verify if the file was downloaded.
+        /// Test to download a file and verify if the file was downloaded.
         /// </summary>
         [TestMethod]
         public async Task DownLoadFileAsync_UrlOk()
@@ -36,7 +36,7 @@ namespace TestCases
         }
 
         /// <summary>
-        /// Tries to download a file and verify if the file was downloaded.
+        /// Test to download a file with a URL which is missing http/https. Expects to get an InvalidOperationException.
         /// </summary>
         [TestMethod]
         public async Task DownLoadFileAsync_UrlMissingHttp()
@@ -50,7 +50,7 @@ namespace TestCases
         }
 
         /// <summary>
-        /// 
+        /// Test to get the verified download URL. Input is in a good format.
         /// </summary>
         [TestMethod]
         public void VerifyDownLoadUrl_UrlOk()
@@ -59,7 +59,7 @@ namespace TestCases
         }
 
         /// <summary>
-        /// 
+        /// Test to get the verified download URL. Input is missing http/https.
         /// </summary>
         [TestMethod]
         public void VerifyDownLoadUrl_MissingHttp()
@@ -68,7 +68,7 @@ namespace TestCases
         }
 
         /// <summary>
-        /// 
+        /// Test to get the verified download URL. Input has a parameter in the URL.
         /// </summary>
         [TestMethod]
         public void VerifyDownLoadUrl_ClearInputFromUrl()
@@ -77,7 +77,7 @@ namespace TestCases
         }
 
         /// <summary>
-        /// 
+        /// Test to get the set of unique content URLs from an HTML source.
         /// </summary>
         [TestMethod]
         public void GetContentUrls_HtmlOk()
