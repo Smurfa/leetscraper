@@ -48,7 +48,7 @@ namespace WebScraper
         /// </summary>
         /// <param name="filepath">The path of the file to load.</param>
         /// <returns></returns>
-        public static async Task<string> ReadFileToString(string filepath)
+        public static async Task<string> ReadFileToStringAsync(string filepath)
         {
             using (var fileStream = File.Open(filepath, FileMode.Open, FileAccess.Read))
             using (var reader = new StreamReader(fileStream))

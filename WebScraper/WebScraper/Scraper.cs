@@ -42,7 +42,7 @@ namespace WebScraper
         {
             foreach (var filepath in DirectoryHandler.GetCssFilepaths(path))
             {
-                var css = await DirectoryHandler.ReadFileToString(filepath);
+                var css = await DirectoryHandler.ReadFileToStringAsync(filepath);
                 foreach (var url in _cssParser.GetContentUrls(css))
                 {
                     await DownloadFileAsync(VerifyDownloadUrl(url));
@@ -109,7 +109,7 @@ namespace WebScraper
             using (var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
             using (var content = await response.Content.ReadAsStreamAsync())
             {
-                await DirectoryHandler.SaveFileAsync(content, DirectoryHandler.ExtractPathFromUrl(url));   
+                await DirectoryHandler.SaveFileAsync(content, filepath);
             }
         }
 
