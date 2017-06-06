@@ -43,7 +43,7 @@ namespace TestCases
         /// Test the CSS parser to handle empty string as input. Expects to return an empty set.
         /// </summary>
         [TestMethod]
-        public void GetContentUrls_EmptyString()
+        public void GetContentUrls_CssEmptyString()
         {
             Assert.IsTrue(_parser.GetContentUrls(string.Empty).Count() == 0);
         }
@@ -52,10 +52,9 @@ namespace TestCases
         /// Test the CSS parser to handle null as input. Expects to return an empty set.
         /// </summary>
         [TestMethod]
-        public void GetContentUrls_NullString()
+        public void GetContentUrls_CssNullString()
         {
             Assert.IsTrue(_parser.GetContentUrls(null).Count() == 0);
         }
-
     }
 }
