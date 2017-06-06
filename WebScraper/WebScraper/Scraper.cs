@@ -13,8 +13,9 @@ namespace WebScraper
     /// </summary>
     public class Scraper
     {
-        private HtmlParser _htmlParser = new HtmlParser();
         private CssParser _cssParser = new CssParser();
+        private HtmlParser _htmlParser = new HtmlParser();
+        private HttpClient _httpClient = new HttpClient();
         private string _baseUrl;
 
         /// <summary>
@@ -88,8 +89,8 @@ namespace WebScraper
         /// <returns></returns>
         public async Task<string> GetPageAsync(string url)
         {
-            using (var client = new HttpClient())
-                return await client.GetStringAsync(url);
+            //using (var client = new HttpClient())
+            return await _httpClient.GetStringAsync(url);
         }
 
         /// <summary>
@@ -104,8 +105,8 @@ namespace WebScraper
                 return;
 
             Console.WriteLine("Downloading... " + url);
-            using (var client = new HttpClient())
-            using (var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
+            //using (var client = new HttpClient())
+            using (var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
             using (var content = await response.Content.ReadAsStreamAsync())
             {
                 await DirectoryHandler.SaveFileAsync(content, DirectoryHandler.ExtractPathFromUrl(url));   
