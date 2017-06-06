@@ -11,6 +11,8 @@ namespace WebScraper
     /// </summary>
     public class HtmlParser
     {
+        private HtmlDocument _document = new HtmlDocument();
+
         /// <summary>
         /// Gets the set of values from a specified attribute that belongs to an HTML-tag.
         /// </summary>
@@ -20,10 +22,9 @@ namespace WebScraper
         /// <returns></returns>
         public IEnumerable<string> ExtractAllTagAttribute(string html, string tag, string attribute)
         {
-            var document = new HtmlDocument();
-            document.LoadHtml(html);
+            _document.LoadHtml(html ?? string.Empty);
 
-            var nodes = document.DocumentNode.SelectNodes("//" + tag + "[@" + attribute +  "]");
+            var nodes = _document.DocumentNode.SelectNodes("//" + tag + "[@" + attribute +  "]");
             if (nodes != null)
             {
                 foreach (var node in nodes)
