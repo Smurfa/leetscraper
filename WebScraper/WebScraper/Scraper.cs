@@ -63,26 +63,13 @@ namespace WebScraper
 
             var result = await GetPageAsync(_baseUrl + pageToGet);
             var aHrefs = _htmlParser.ExtractAllTagAttribute(result, "a", "href")
-                .Where(x => x.StartsWith("/") && !x.Contains("#") && !x.Contains("www.") && x.Length > 1).Distinct();
+                .Where(x => x.StartsWith("/") && !x.Contains("#") && !x.StartsWith("//") && x.Length > 1).Distinct();
             var contentUrls = GetContentUrls(result);
 
             foreach (var link in contentUrls)
             {
-                //At least one link seemed to consist of multple links (e.g. a href="http://qwe...com,http://rty...com") thus the check and split
-                if (link.Contains(','))
-                {
-                    var actualLinks = link.Split(',');
-                    foreach (var actualLink in actualLinks)
-                    {
-                        var downloadUrl = VerifyDownloadUrl(actualLink);
-                        await DownloadFileAsync(downloadUrl);
-                    }
-                }
-                else
-                {
-                    var downloadUrl = VerifyDownloadUrl(link);
-                    await DownloadFileAsync(downloadUrl);
-                }
+                var downloadUrl = VerifyDownloadUrl(link);
+                await DownloadFileAsync(downloadUrl);
             }
             var pageUrl = VerifyDownloadUrl(_baseUrl + pageToGet);
             pageUrl = pageUrl.EndsWith(".htm") || pageUrl.EndsWith(".html") ? pageUrl : pageUrl + ".html";
@@ -163,8 +150,10 @@ namespace WebScraper
             foreach (var attribute in attributesToExtract)
             {
                 result.AddRange(_htmlParser.ExtractAllTagAttribute(html, attribute.Item1, attribute.Item2));
-            }            
-            return result;
+            }
+
+            //Exluding external links
+            return result.Where(x => !x.StartsWith("//") && !(x.StartsWith("http://") || x.StartsWith("https://")));
         }
     }
 }
