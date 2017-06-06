@@ -127,8 +127,9 @@ namespace WebScraper
             //Not interested in relative paths
             url = url.Contains("../") ? url.Replace("../", string.Empty) : url;
 
-            //Make sure the URL either starts of with http or https
-            url = url.StartsWith("http://") || url.StartsWith("https://") ? url : _baseUrl + url;
+            //Make sure the URL either starts of with http or https, assumes that the url contains the adress if _baseUrl is empty
+            if (!url.StartsWith("http://") && !url.StartsWith("https://"))
+                url = string.IsNullOrEmpty(_baseUrl) ? @"http://" + url : _baseUrl + url;
             
             return url;
         }
