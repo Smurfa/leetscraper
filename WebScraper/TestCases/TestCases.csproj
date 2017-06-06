@@ -47,12 +47,14 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestScraper.cs" />
     <Compile Include="TestCssParser.cs" />
     <Compile Include="TestHtmlParser.cs" />
+    <Compile Include="TestDirectoryHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -69,6 +71,7 @@
   <ItemGroup>
     <Content Include="Resources\bad.css" />
     <Content Include="Resources\index.html" />
+    <Content Include="Resources\TextFile1.txt" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
