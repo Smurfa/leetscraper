@@ -153,9 +153,8 @@ namespace WebScraper
             {
                 result.AddRange(_htmlParser.ExtractAllTagAttribute(html, attribute.Item1, attribute.Item2));
             }
-
-            //Exluding external links
-            return result.Where(x => !x.StartsWith("//") && !(x.StartsWith("http://") || x.StartsWith("https://")));
+            
+            return result.Where(x => !x.StartsWith("//") && !(x.StartsWith("http://") || x.StartsWith("https://"))).Distinct();
         }
     }
 }
