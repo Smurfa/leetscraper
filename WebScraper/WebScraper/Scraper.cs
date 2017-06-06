@@ -115,7 +115,7 @@ namespace WebScraper
 
         /// <summary>
         /// Take a URL which will be used for downloading a file and verifies that it is in a proper format.
-        /// Removes any input and relative paths and make sure it stats with an http or https request.
+        /// Removes any input and relative paths and make sure it starts with an http or https request.
         /// </summary>
         /// <param name="url">The URL to be verified.</param>
         /// <returns></returns>
@@ -135,7 +135,7 @@ namespace WebScraper
         }
 
         /// <summary>
-        /// Gets the set or URLs to download content from for a specified HTML source.
+        /// Gets the set or URLs to download content from for a specified HTML source. External links will be excluded.
         /// </summary>
         /// <param name="html">The HTML source to scan for tags and attributes.</param>
         /// <returns></returns>
