@@ -9,9 +9,9 @@ namespace TestCases
     [TestClass]
     public class TestCssParser
     {
+        private CssParser _parser = new CssParser();
         private static string _cssOk;
         private static string _cssBad;
-        private CssParser _parser = new CssParser();
 
         [ClassInitialize()]
         public static void TestCssParserInitialize(TestContext context)

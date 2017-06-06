@@ -19,7 +19,7 @@ namespace WebScraper
         /// <returns></returns>
         public IEnumerable<string> GetContentUrls(string css)
         {
-            return css == null ? new List<string>().AsEnumerable() : new CssLoader().GetUris(css);
+            return new CssLoader().GetUris(css ?? string.Empty);
         }
     }
 }
