@@ -19,18 +19,28 @@ namespace TestCases
             }
         }
 
+        /// <summary>
+        /// Test to get the set of filenames that are have the .css-extension.
+        /// </summary>
         [TestMethod]
         public void GetCssFilepaths_PathOk()
         {
             Assert.IsTrue(DirectoryHandler.GetCssFilepaths(Directory.GetCurrentDirectory() + "\\..\\..\\Resources").Count() == 2);
         }
 
+        /// <summary>
+        /// Test to get the set of filenames that are have the .css-extension from an empty directory.
+        /// </summary>
         [TestMethod]
         public void GetCssFilepaths_DirectoryEmpty()
         {
             Assert.IsTrue(DirectoryHandler.GetCssFilepaths(Directory.GetCurrentDirectory() + "\\..\\..\\Resources\\Dummy").Count() == 0);
         }
 
+        /// <summary>
+        /// Test to get the set of filenames that are have the .css-extension from a directory which does not exist.
+        /// Expects a DirectoryNotFoundException.
+        /// </summary>
         [TestMethod]
         public void GetCssFilepaths_PathBad()
         {
@@ -42,6 +52,9 @@ namespace TestCases
             catch (DirectoryNotFoundException) { }
         }
 
+        /// <summary>
+        /// Test to extract a filepath from an URL by removing http or https.
+        /// </summary>
         [TestMethod]
         public void ExtractPathFromUrl_UrlOk()
         {
@@ -49,13 +62,20 @@ namespace TestCases
             Assert.AreEqual("something.com", DirectoryHandler.ExtractPathFromUrl("https://something.com"));
         }
 
-
+        /// <summary>
+        /// Test to verify that the asynchronously read file content is correct.
+        /// </summary>
+        /// <returns></returns>
         [TestMethod]
         public async Task ReadFileToStringAsync_PathOk()
         {
             Assert.AreEqual(await DirectoryHandler.ReadFileToStringAsync(Directory.GetCurrentDirectory() + "\\..\\..\\Resources\\TextFile1.txt"), "just Some cONTENT text123");
         }
 
+        /// <summary>
+        /// Test to check the asynchronous file read if paths are bad. Expects DirectoryNotFoundException if directory does not exist and FileNotFoundException if file does not exist.
+        /// </summary>
+        /// <returns></returns>
         [TestMethod]
         public async Task ReadFileToStringAsync_PathBad()
         {
@@ -73,6 +93,10 @@ namespace TestCases
             catch (FileNotFoundException) { }
         }
 
+        /// <summary>
+        /// Test to verify that the asynchronously saved file are saved and contains correct information.
+        /// </summary>
+        /// <returns></returns>
         [TestMethod]
         public async Task SaveFileAsync_PathOk()
         {
